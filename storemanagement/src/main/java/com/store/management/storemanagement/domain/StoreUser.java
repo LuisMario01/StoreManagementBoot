@@ -24,6 +24,15 @@ public class StoreUser {
 	@Column(name="role")
 	private Integer role;
 	
+	protected StoreUser() {}
+	
+	public StoreUser(Long idUser, String username, String password, Integer role) {
+		this.idUser = idUser;
+		this.password = password;
+		this.username = username;
+		this.role = role;
+	}
+	
 	public Long getIdUser() {
 		return idUser;
 	}
@@ -47,6 +56,11 @@ public class StoreUser {
 	}
 	public void setRole(Integer role) {
 		this.role = role;
+	}
+	
+	@Override
+	public String toString() {
+		return "";
 	}
 	
 }

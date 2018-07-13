@@ -10,28 +10,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.store.management.storemanagement.domain.Product;
 import com.store.management.storemanagement.repository.ProductRepository;
+import com.store.management.storemanagement.service.ProductRepositoryService;
 
 
 @RestController
 public class MainController{
 	@Autowired
-	public ProductRepository productRepository;
-	
-	@RequestMapping(value="/save")
-	public void save() {
-		productRepository.save(new Product("Chocolate", 1.25, 200));
-		productRepository.save(new Product("Milk", 1.5, 100));
-	}
+	public ProductRepositoryService productRepositoryService;
 	
 	@RequestMapping(value = "/findall", method=RequestMethod.GET)
 	public ResponseEntity<String> test(){
 		ResponseEntity<String> response;
-		String result = "";
-        
-        for(Product product : productRepository.findAll()){
-        	result += product.toString() + "</br>";
-        }
-           
+		String result = productRepositoryService.findAll();
         response = new ResponseEntity<>(result, HttpStatus.FOUND);
 		return response;
 	}
