@@ -7,6 +7,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+// Domain class for Product in database
 @Entity
 @Table(name="product")
 public class Product {
@@ -58,6 +59,7 @@ public class Product {
 		this.stock = stock;
 	}
 	
+	@Override
 	public String toString() {
 		return "{id:"+this.idProduct+",product:"+this.product+"}";
 	}
