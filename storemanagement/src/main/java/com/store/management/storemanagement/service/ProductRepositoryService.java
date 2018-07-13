@@ -2,12 +2,16 @@ package com.store.management.storemanagement.service;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.store.management.storemanagement.domain.Product;
 import com.store.management.storemanagement.repository.ProductRepository;
 
@@ -62,6 +66,13 @@ public class ProductRepositoryService {
 			result = "Failed";
 			response = new ResponseEntity("Failed", HttpStatus.NO_CONTENT);
 		}
+		return response;
+	}
+	
+	public ResponseEntity<String> saveOneProduct(HttpServletRequest request, Product product){
+		ResponseEntity<String> response;
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		response = new ResponseEntity(gson.toString(), HttpStatus.OK);
 		return response;
 	}
 }
