@@ -3,6 +3,7 @@ package com.store.management.storemanagement.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -33,11 +34,11 @@ public class MainController{
 		return results;
 	}
 	
-	// Product listing method. Shows everything, no authentication required.
-	@RequestMapping(value = "/findAll", method=RequestMethod.GET)
+	// Product listing method. Shows everything, no authentication required. No sorting.
+	@RequestMapping(value = "/products", method=RequestMethod.GET)
 	@ResponseBody
 	public ResponseEntity<String> showAllProducts(){
-		ResponseEntity<String> response = prs.findAll();
+		ResponseEntity<String> response = prs.findAllAsc();
 		return response;
 	}
 	
@@ -49,6 +50,14 @@ public class MainController{
 	public ResponseEntity<String> showAllProductsSorted(@RequestParam("page")String page, @RequestParam("sort")String sort){
 		ResponseEntity<String> response = prs.findAllSorted(page,sort);
 		return response;
+	}
+	
+	// Show one product, searching it by name
+	@RequestMapping(value = "/products/{product}", method = RequestMethod.GET)
+	@ResponseBody
+	public ResponseEntity<String> showProductByName(@PathVariable("product")String productname) {
+		ResponseEntity<String> results = prs.showProductByName(productname);
+		return results;   
 	}
 	
 	
