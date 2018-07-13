@@ -19,9 +19,11 @@ import com.store.management.storemanagement.repository.ProductRepository;
 public class ProductRepositoryService {
 	@Autowired
 	ProductRepository productRepository;
-	public boolean createDataIntoBase() {
+	
+	
+	public boolean loadProductData() {
 		boolean result;
-		try {
+		try {		
 			productRepository.save(new Product("Chocolate", 1.25, 200));
 			productRepository.save(new Product("Milk", 1.5, 100));
 			productRepository.save(new Product("Doritos", 0.75, 200));

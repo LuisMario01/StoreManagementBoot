@@ -1,17 +1,21 @@
 package com.store.management.storemanagement.domain;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 // Domain class for Product in database
 @Entity
 @Table(name="product")
 public class Product {
-	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long idProduct;
@@ -24,6 +28,19 @@ public class Product {
 	
 	@Column(name="stock")
 	private Integer stock;
+	
+	@OneToMany(mappedBy="product", fetch=FetchType.LAZY)
+	private Collection<Purchase> purchases = new ArrayList<Purchase>();
+	
+	//Done purchases
+	
+	@OneToMany(mappedBy="product", fetch=FetchType.LAZY)
+	private Collection<Like> likes = new ArrayList<Like>();
+	
+	//Done naiks
+	
+	@OneToMany(mappedBy="product", fetch=FetchType.LAZY)
+	private Collection<ProductLog> productlog = new ArrayList<ProductLog>();
 	
 	protected Product(){
 		
@@ -58,7 +75,26 @@ public class Product {
 	public void setStock(Integer stock) {
 		this.stock = stock;
 	}
+	public Collection<Purchase> getPurchases() {
+		return purchases;
+	}
+
+	public void setPurchases(Collection<Purchase> purchases) {
+		this.purchases = purchases;
+	}
 	
+	public Collection<Like> getLikes() {
+		return likes;
+	}
+	public void setLikes(Collection<Like> likes) {
+		this.likes = likes;
+	}
+	public Collection<ProductLog> getProductlog() {
+		return productlog;
+	}
+	public void setProductlog(Collection<ProductLog> productlog) {
+		this.productlog = productlog;
+	}
 	@Override
 	public String toString() {
 		return "{id:"+this.idProduct+",product:"+this.product+"}";

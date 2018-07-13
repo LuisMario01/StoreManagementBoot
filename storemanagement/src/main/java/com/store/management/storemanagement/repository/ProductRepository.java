@@ -11,9 +11,6 @@ public interface ProductRepository extends JpaRepository<Product, Long>{
 	// Creating products methods
 	public Product save(Product product);
 	
-	//Searching methods
-	public Product findOne(Product product);
-	
 	// Listing methods
 	public List<Product> findAll();
 	public List<Product> findAllByOrderByProductDesc(Pageable page);

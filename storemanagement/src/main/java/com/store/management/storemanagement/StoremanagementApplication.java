@@ -7,12 +7,16 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.stereotype.Component;
 
 import com.store.management.storemanagement.service.ProductRepositoryService;
+import com.store.management.storemanagement.service.StoreUserRepositoryService;
 
 @SpringBootApplication
 public class StoremanagementApplication {
 
 	@Autowired
-	public ProductRepositoryService productRepositoryService;
+	public ProductRepositoryService prs;
+	
+	@Autowired
+	public StoreUserRepositoryService surs;
 	
 	public static void main(String[] args) {
 		SpringApplication.run(StoremanagementApplication.class, args);
@@ -22,7 +26,8 @@ public class StoremanagementApplication {
 	public class CommandLineAppStartupRunner implements CommandLineRunner {
 	    @Override
 	    public void run(String...args) throws Exception {
-	        productRepositoryService.createDataIntoBase();
+	    	surs.loadStoreUserData();
+	    	prs.loadProductData();
 	    }
 	}
 }
