@@ -23,6 +23,7 @@ public class StoreUser {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long idUser;
 	
+	//Make sure column is unique, since this is used to identify a user from login.
 	@Column(name="username", unique = true)
 	private String username;
 	
