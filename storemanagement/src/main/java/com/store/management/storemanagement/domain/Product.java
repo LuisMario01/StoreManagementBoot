@@ -32,19 +32,14 @@ public class Product {
 	@OneToMany(mappedBy="product", fetch=FetchType.LAZY)
 	private Collection<Purchase> purchases = new ArrayList<Purchase>();
 	
-	//Done purchases
-	
 	@OneToMany(mappedBy="product", fetch=FetchType.LAZY)
 	private Collection<Like> likes = new ArrayList<Like>();
-	
-	//Done naiks
 	
 	@OneToMany(mappedBy="product", fetch=FetchType.LAZY)
 	private Collection<ProductLog> productlog = new ArrayList<ProductLog>();
 	
-	protected Product(){
-		
-	}
+	public Product() {}
+	
 	public Product(String product, Double price, Integer stock){
 		this.product = product;
 		this.stock = stock;

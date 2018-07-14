@@ -33,7 +33,6 @@ public class StoreUserRepositoryService {
 	}
 	
 	public ResponseEntity<String> login(@RequestBody LoginDTO login) {
-		ResponseEntity<String> response;
 		System.out.println(login.getUsername()+login.getPassword());
 		try {
 			StoreUser user = sur.findByUsername(login.getUsername());

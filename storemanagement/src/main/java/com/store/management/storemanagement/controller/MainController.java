@@ -1,8 +1,10 @@
 package com.store.management.storemanagement.controller;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.store.management.storemanagement.domain.StoreUser;
 import com.store.management.storemanagement.dto.LoginDTO;
+import com.store.management.storemanagement.dto.ProductDTO;
 import com.store.management.storemanagement.service.ProductRepositoryService;
 import com.store.management.storemanagement.service.StoreUserRepositoryService;
 
@@ -58,6 +60,15 @@ public class MainController{
 	public ResponseEntity<String> showProductByName(@PathVariable("product")String productname) {
 		ResponseEntity<String> results = prs.showProductByName(productname);
 		return results;   
+	}
+	
+	// Adding a new product to database
+	@Transactional
+	@RequestMapping(value="/products/addProduct", method=RequestMethod.POST)
+	@ResponseBody
+	public ResponseEntity<String> saveProduct(HttpServletRequest request, @RequestBody ProductDTO productDTO) {	
+		ResponseEntity<String> results = prs.saveProduct(request, productDTO);
+		return results;
 	}
 	
 	
