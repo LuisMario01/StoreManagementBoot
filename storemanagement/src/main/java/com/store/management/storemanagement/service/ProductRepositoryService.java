@@ -140,7 +140,8 @@ public class ProductRepositoryService {
 			byte[] valueDecoded = Base64.decodeBase64(request.getHeader("token"));
 			Gson usrGson = new Gson();
 			StoreUser user= usrGson.fromJson(new String(valueDecoded), StoreUser.class);
-			if(user.getRole()==0 || user.getRole()==1) { // admins can algo buy.
+			
+			if(user.getRole()==0 || user.getRole()==1) { // admins can also buy.
 				Gson gson = new GsonBuilder().setPrettyPrinting().create();
 				Product buyingProduct = new Product();
 				Purchase newPurchase = new Purchase();
@@ -152,15 +153,15 @@ public class ProductRepositoryService {
 						buyingProduct = productRepository.save(buyingProduct);
 						newPurchase = purchaseRepository.save(PurchaseUtil.createPurchase(purchaseDTO, user, buyingProduct));
 						if(newPurchase!=null && buyingProduct != null)
-							return new ResponseEntity<>(gson.toJson(buyingProduct), HttpStatus.OK);
+							return new ResponseEntity<String>(gson.toJson(buyingProduct), HttpStatus.OK);
 						else
-							return new ResponseEntity<>("Transaction not completed", HttpStatus.NOT_MODIFIED);
+							return new ResponseEntity<String>("Transaction not completed", HttpStatus.NOT_MODIFIED);
 					}
 					else {
-						return new ResponseEntity<>("Insufficient stock", HttpStatus.NOT_ACCEPTABLE);
+						return new ResponseEntity<String>("Insufficient stock", HttpStatus.NOT_ACCEPTABLE);
 					}
 				}
-				else return new ResponseEntity<>("Product doesn't exist", HttpStatus.NO_CONTENT);
+				else return new ResponseEntity<String>("Product doesn't exist", HttpStatus.NO_CONTENT);
 			}
 			else {
 				return new ResponseEntity<>("Not allowed", HttpStatus.UNAUTHORIZED);
