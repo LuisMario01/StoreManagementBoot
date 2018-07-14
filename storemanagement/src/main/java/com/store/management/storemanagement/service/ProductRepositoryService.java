@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -105,6 +106,7 @@ public class ProductRepositoryService {
 		}
 	}
 	
+	@Transactional
 	//Saving a product. Requires admin authorization.
 	public ResponseEntity<String> saveProduct(HttpServletRequest request, ProductDTO productDTO) {	
 		try {
@@ -140,24 +142,25 @@ public class ProductRepositoryService {
 			byte[] valueDecoded = Base64.decodeBase64(request.getHeader("token"));
 			Gson usrGson = new Gson();
 			StoreUser user= usrGson.fromJson(new String(valueDecoded), StoreUser.class);
+			System.out.println(user.getUsername()+user.getPassword());
 			
 			if(user.getRole()==0 || user.getRole()==1) { // admins can also buy.
 				Gson gson = new GsonBuilder().setPrettyPrinting().create();
 				Product buyingProduct = new Product();
 				Purchase newPurchase = new Purchase();
-				buyingProduct = productRepository.findOne(purchaseDTO.getIdProduct().longValue());
+				buyingProduct = productRepository.findByIdProduct(purchaseDTO.getIdProduct().longValue());
 				if(buyingProduct!=null) {
 					int newStock = buyingProduct.getStock()-purchaseDTO.getAmount(); //Decreasing stock w/purchase
 					if(newStock>=0) {
 						buyingProduct.setStock(newStock); //Setting new stock
 						buyingProduct = productRepository.save(buyingProduct);
 						newPurchase = purchaseRepository.save(PurchaseUtil.createPurchase(purchaseDTO, user, buyingProduct));
-						if(newPurchase!=null && buyingProduct != null)
-							return new ResponseEntity<String>(gson.toJson(buyingProduct), HttpStatus.OK);
+						if(newPurchase!=null && buyingProduct != null) {
+							return new ResponseEntity<String>("Done", HttpStatus.OK);
+						}
 						else
 							return new ResponseEntity<String>("Transaction not completed", HttpStatus.NOT_MODIFIED);
-					}
-					else {
+					}else {
 						return new ResponseEntity<String>("Insufficient stock", HttpStatus.NOT_ACCEPTABLE);
 					}
 				}
@@ -168,8 +171,10 @@ public class ProductRepositoryService {
 			}
 		}
 		catch(Exception e) {
+			System.out.println(e.getMessage());
 			return new ResponseEntity<>("Transaction not completed", HttpStatus.BAD_REQUEST);
 		}
+			
 	}
 	
 }
