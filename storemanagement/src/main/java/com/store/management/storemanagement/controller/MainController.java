@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.store.management.storemanagement.dto.LoginDTO;
 import com.store.management.storemanagement.dto.ProductDTO;
+import com.store.management.storemanagement.dto.PurchaseDTO;
 import com.store.management.storemanagement.service.ProductRepositoryService;
 import com.store.management.storemanagement.service.StoreUserRepositoryService;
 
@@ -68,6 +69,15 @@ public class MainController{
 	@ResponseBody
 	public ResponseEntity<String> saveProduct(HttpServletRequest request, @RequestBody ProductDTO productDTO) {	
 		ResponseEntity<String> results = prs.saveProduct(request, productDTO);
+		return results;
+	}
+	
+	// Buying a product
+	@Transactional
+	@RequestMapping(value="/products/buyProduct", method=RequestMethod.PUT)
+	@ResponseBody
+	public ResponseEntity<String> buyProduct(HttpServletRequest request, @RequestBody PurchaseDTO purchaseDTO) {
+		ResponseEntity<String> results = prs.buyProduct(request, purchaseDTO);
 		return results;
 	}
 	

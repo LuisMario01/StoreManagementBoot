@@ -14,14 +14,21 @@ import org.springframework.stereotype.Service;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.store.management.storemanagement.domain.Product;
+import com.store.management.storemanagement.domain.Purchase;
 import com.store.management.storemanagement.domain.StoreUser;
 import com.store.management.storemanagement.dto.ProductDTO;
+import com.store.management.storemanagement.dto.PurchaseDTO;
 import com.store.management.storemanagement.repository.ProductRepository;
+import com.store.management.storemanagement.repository.PurchaseRepository;
+import com.store.management.storemanagement.util.PurchaseUtil;
 
 @Service
 public class ProductRepositoryService {
 	@Autowired
 	ProductRepository productRepository;
+	
+	@Autowired
+	PurchaseRepository purchaseRepository;
 	
 	// Loading data for database
 	public boolean loadProductData() {
@@ -98,7 +105,7 @@ public class ProductRepositoryService {
 		}
 	}
 	
-	//Saving a product
+	//Saving a product. Requires admin authorization.
 	public ResponseEntity<String> saveProduct(HttpServletRequest request, ProductDTO productDTO) {	
 		try {
 			byte[] valueDecoded = Base64.decodeBase64(request.getHeader("token"));
@@ -125,4 +132,43 @@ public class ProductRepositoryService {
 			return new ResponseEntity<>("Product not saved", HttpStatus.BAD_REQUEST);
 		}
 	}
+	
+	//Buying a product - Performed with a DTO object of the purchase.
+	//Requires user authorization
+	public ResponseEntity<String> buyProduct(HttpServletRequest request, PurchaseDTO purchaseDTO) {
+		try {
+			byte[] valueDecoded = Base64.decodeBase64(request.getHeader("token"));
+			Gson usrGson = new Gson();
+			StoreUser user= usrGson.fromJson(new String(valueDecoded), StoreUser.class);
+			if(user.getRole()==0 || user.getRole()==1) { // admins can algo buy.
+				Gson gson = new GsonBuilder().setPrettyPrinting().create();
+				Product buyingProduct = new Product();
+				Purchase newPurchase = new Purchase();
+				buyingProduct = productRepository.findOne(purchaseDTO.getIdProduct().longValue());
+				if(buyingProduct!=null) {
+					int newStock = buyingProduct.getStock()-purchaseDTO.getAmount(); //Decreasing stock w/purchase
+					if(newStock>=0) {
+						buyingProduct.setStock(newStock); //Setting new stock
+						buyingProduct = productRepository.save(buyingProduct);
+						newPurchase = purchaseRepository.save(PurchaseUtil.createPurchase(purchaseDTO, user, buyingProduct));
+						if(newPurchase!=null && buyingProduct != null)
+							return new ResponseEntity<>(gson.toJson(buyingProduct), HttpStatus.OK);
+						else
+							return new ResponseEntity<>("Transaction not completed", HttpStatus.NOT_MODIFIED);
+					}
+					else {
+						return new ResponseEntity<>("Insufficient stock", HttpStatus.NOT_ACCEPTABLE);
+					}
+				}
+				else return new ResponseEntity<>("Product doesn't exist", HttpStatus.NO_CONTENT);
+			}
+			else {
+				return new ResponseEntity<>("Not allowed", HttpStatus.UNAUTHORIZED);
+			}
+		}
+		catch(Exception e) {
+			return new ResponseEntity<>("Transaction not completed", HttpStatus.BAD_REQUEST);
+		}
+	}
+	
 }
