@@ -11,7 +11,6 @@ public interface ProductRepository extends JpaRepository<Product, Long>{
 	// Creating products methods
 	public Product save(Product product);
 	
-	
 	// Searching methods
 	public Product findByProduct(String product);
 	public Product findByIdProduct(Long idProduct);
@@ -23,5 +22,8 @@ public interface ProductRepository extends JpaRepository<Product, Long>{
 	
 	public List<Product> findAllByOrderByProductDesc(Pageable page);
 	public List<Product> findAllByOrderByProductAsc(Pageable page);
+	
+	// Deleting methods
+	public void deleteByIdProduct(Integer id);
 	
 }

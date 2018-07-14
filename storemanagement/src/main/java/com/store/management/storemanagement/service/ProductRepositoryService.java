@@ -217,4 +217,25 @@ public class ProductRepositoryService {
 		}
 	}
 	
+	@Transactional
+	public ResponseEntity<String> deleteProduct(HttpServletRequest request, String idProduct) {
+		try {
+			byte[] valueDecoded = Base64.decodeBase64(request.getHeader("token"));
+			Gson usrGson = new Gson();
+			StoreUser user= usrGson.fromJson(new String(valueDecoded), StoreUser.class);
+			
+			if(user.getRole()==1) {
+				int product = Integer.parseInt(idProduct);
+				productRepository.deleteByIdProduct(product);	
+				return new ResponseEntity<>("Done", HttpStatus.OK);
+			}
+			else {
+				return new ResponseEntity<>("Not allowed", HttpStatus.UNAUTHORIZED);
+			}
+		}catch(Exception e) {
+			System.out.println(e.getMessage());
+			return new ResponseEntity<>("Not allowed", HttpStatus.BAD_REQUEST);
+		}
+	}
+	
 }

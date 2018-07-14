@@ -90,6 +90,13 @@ public class MainController{
 		return results;
 	}
 	
-	
-	
+	//Delete a product by id.
+	//Only admins can delete a product.
+	@Transactional
+	@RequestMapping(value = "/products/{product}", method = RequestMethod.DELETE)
+	@ResponseBody
+	public ResponseEntity<String> deleteProduct(HttpServletRequest request, @PathVariable("product")String idProduct) {
+		ResponseEntity<String> results = prs.deleteProduct(request, idProduct);
+		return results;
+	}
 }
