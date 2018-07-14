@@ -1,5 +1,6 @@
 package com.store.management.storemanagement.dto;
 
+// Data Transfer Object to add a new purchase to database
 public class PurchaseDTO {
 	private Integer idProduct;
 	private Integer amount;

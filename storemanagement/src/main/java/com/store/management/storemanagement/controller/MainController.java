@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.store.management.storemanagement.dto.LikeDTO;
 import com.store.management.storemanagement.dto.LoginDTO;
 import com.store.management.storemanagement.dto.ProductDTO;
 import com.store.management.storemanagement.dto.PurchaseDTO;
@@ -78,6 +79,14 @@ public class MainController{
 	@ResponseBody
 	public ResponseEntity<String> buyProduct(HttpServletRequest request, @RequestBody PurchaseDTO purchaseDTO) {
 		ResponseEntity<String> results = prs.buyProduct(request, purchaseDTO);
+		return results;
+	}
+	
+	@Transactional
+	@RequestMapping(value="/products/likeProduct", method=RequestMethod.POST)
+	@ResponseBody
+	public ResponseEntity<String> likeProduct(HttpServletRequest request, @RequestBody LikeDTO likeDTO) {
+		ResponseEntity<String> results = prs.likeProduct(request, likeDTO);
 		return results;
 	}
 	

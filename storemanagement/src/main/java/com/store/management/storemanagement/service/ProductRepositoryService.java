@@ -14,11 +14,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.store.management.storemanagement.domain.Like;
 import com.store.management.storemanagement.domain.Product;
 import com.store.management.storemanagement.domain.Purchase;
 import com.store.management.storemanagement.domain.StoreUser;
+import com.store.management.storemanagement.dto.LikeDTO;
 import com.store.management.storemanagement.dto.ProductDTO;
 import com.store.management.storemanagement.dto.PurchaseDTO;
+import com.store.management.storemanagement.repository.LikeRepository;
 import com.store.management.storemanagement.repository.ProductRepository;
 import com.store.management.storemanagement.repository.PurchaseRepository;
 import com.store.management.storemanagement.util.PurchaseUtil;
@@ -26,10 +29,13 @@ import com.store.management.storemanagement.util.PurchaseUtil;
 @Service
 public class ProductRepositoryService {
 	@Autowired
-	ProductRepository productRepository;
+	private ProductRepository productRepository;
 	
 	@Autowired
-	PurchaseRepository purchaseRepository;
+	private PurchaseRepository purchaseRepository;
+	
+	@Autowired
+	private LikeRepository likeRepository;
 	
 	// Loading data for database
 	public boolean loadProductData() {
@@ -136,7 +142,8 @@ public class ProductRepositoryService {
 	}
 	
 	//Buying a product - Performed with a DTO object of the purchase.
-	//Requires user authorization
+	//Requires user or admin authorization
+	@Transactional
 	public ResponseEntity<String> buyProduct(HttpServletRequest request, PurchaseDTO purchaseDTO) {
 		try {
 			byte[] valueDecoded = Base64.decodeBase64(request.getHeader("token"));
@@ -175,6 +182,39 @@ public class ProductRepositoryService {
 			return new ResponseEntity<>("Transaction not completed", HttpStatus.BAD_REQUEST);
 		}
 			
+	}
+	
+	// Method to like a product
+	// Requires user or admin authorization
+	@Transactional
+	public ResponseEntity<String> likeProduct(HttpServletRequest request, LikeDTO likeDTO) {
+		try {
+			byte[] valueDecoded = Base64.decodeBase64(request.getHeader("token"));
+			Gson usrGson = new Gson();
+			StoreUser user= usrGson.fromJson(new String(valueDecoded), StoreUser.class);
+			
+			if(user.getRole()==0 || user.getRole()==1) {
+				Gson gson = new GsonBuilder().setPrettyPrinting().create();
+				Like newLike = new Like();
+				Product product = productRepository.findByIdProduct(likeDTO.getIdProduct().longValue());
+				newLike.setProduct(product);
+				newLike.setUser(user);
+				newLike = likeRepository.save(newLike);
+				
+				if(newLike!=null) {
+					return new ResponseEntity<>("Done", HttpStatus.OK);
+				}
+				else {
+					return new ResponseEntity<>("Transaction failed", HttpStatus.NO_CONTENT);
+				}
+			}
+			else {
+				return new ResponseEntity<>("Not allowed", HttpStatus.UNAUTHORIZED);
+			}
+		}
+		catch(Exception e) {
+			return new ResponseEntity<>("Transaction not completed", HttpStatus.BAD_REQUEST);
+		}
 	}
 	
 }

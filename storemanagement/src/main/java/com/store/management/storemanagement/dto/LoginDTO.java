@@ -1,5 +1,6 @@
 package com.store.management.storemanagement.dto;
 
+// Data Transfer Object to login a user of the system
 public class LoginDTO {
 	private String username;
 	private String password;

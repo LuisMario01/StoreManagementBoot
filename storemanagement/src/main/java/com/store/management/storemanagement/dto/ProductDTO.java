@@ -1,5 +1,6 @@
 package com.store.management.storemanagement.dto;
 
+// Data Transfer Object to a add a product to database
 public class ProductDTO {
 	private String product;
 	private Double price;
