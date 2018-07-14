@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.store.management.storemanagement.domain.Product;
 import com.store.management.storemanagement.dto.LikeDTO;
 import com.store.management.storemanagement.dto.LoginDTO;
 import com.store.management.storemanagement.dto.ProductDTO;
@@ -65,7 +66,6 @@ public class MainController{
 	}
 	
 	// Adding a new product to database
-	@Transactional
 	@RequestMapping(value="/products/addProduct", method=RequestMethod.POST)
 	@ResponseBody
 	public ResponseEntity<String> saveProduct(HttpServletRequest request, @RequestBody ProductDTO productDTO) {	
@@ -74,7 +74,6 @@ public class MainController{
 	}
 	
 	// Buying a product
-	@Transactional
 	@RequestMapping(value="/products/buyProduct", method=RequestMethod.PUT)
 	@ResponseBody
 	public ResponseEntity<String> buyProduct(HttpServletRequest request, @RequestBody PurchaseDTO purchaseDTO) {
@@ -82,7 +81,6 @@ public class MainController{
 		return results;
 	}
 	
-	@Transactional
 	@RequestMapping(value="/products/likeProduct", method=RequestMethod.POST)
 	@ResponseBody
 	public ResponseEntity<String> likeProduct(HttpServletRequest request, @RequestBody LikeDTO likeDTO) {
@@ -90,9 +88,17 @@ public class MainController{
 		return results;
 	}
 	
+	//Updating product price.
+	//Authorization as admin required
+	@RequestMapping(value="/products/updateProduct", method=RequestMethod.PUT)
+	@ResponseBody
+	public ResponseEntity<String> alterProductPrice(HttpServletRequest request, @RequestBody Product product) {
+		ResponseEntity<String> results = prs.alterProductPrice(request, product);
+		return results;
+	}
+	
 	//Delete a product by id.
 	//Only admins can delete a product.
-	@Transactional
 	@RequestMapping(value = "/products/{product}", method = RequestMethod.DELETE)
 	@ResponseBody
 	public ResponseEntity<String> deleteProduct(HttpServletRequest request, @PathVariable("product")String idProduct) {

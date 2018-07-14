@@ -16,14 +16,17 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.store.management.storemanagement.domain.Like;
 import com.store.management.storemanagement.domain.Product;
+import com.store.management.storemanagement.domain.ProductLog;
 import com.store.management.storemanagement.domain.Purchase;
 import com.store.management.storemanagement.domain.StoreUser;
 import com.store.management.storemanagement.dto.LikeDTO;
 import com.store.management.storemanagement.dto.ProductDTO;
 import com.store.management.storemanagement.dto.PurchaseDTO;
 import com.store.management.storemanagement.repository.LikeRepository;
+import com.store.management.storemanagement.repository.ProductLogRepository;
 import com.store.management.storemanagement.repository.ProductRepository;
 import com.store.management.storemanagement.repository.PurchaseRepository;
+import com.store.management.storemanagement.util.ProductLogUtil;
 import com.store.management.storemanagement.util.PurchaseUtil;
 
 @Service
@@ -36,6 +39,9 @@ public class ProductRepositoryService {
 	
 	@Autowired
 	private LikeRepository likeRepository;
+	
+	@Autowired
+	private ProductLogRepository productLogRepository;
 	
 	// Loading data for database
 	public boolean loadProductData() {
@@ -217,24 +223,51 @@ public class ProductRepositoryService {
 		}
 	}
 	
+	// Method to update product price
+	@Transactional
+	public ResponseEntity<String> alterProductPrice(HttpServletRequest request, Product product) {
+		try {
+				byte[] valueDecoded = Base64.decodeBase64(request.getHeader("token"));
+				Gson usrGson = new Gson();
+				StoreUser user= usrGson.fromJson(new String(valueDecoded), StoreUser.class);
+				if(user.getRole()==0) { //Only admins can update price
+					Gson gson = new GsonBuilder().setPrettyPrinting().create();
+					Product buyingProduct = new Product();
+					buyingProduct = productRepository.findByIdProduct(product.getIdProduct());
+					if(buyingProduct!=null){ // Product exists in database
+						Double previousPrice = buyingProduct.getPrice();
+						productRepository.save(product);
+						ProductLog productLog = ProductLogUtil.createProductLog(buyingProduct, previousPrice);
+						productLogRepository.save(productLog);
+						return new ResponseEntity<>("Done", HttpStatus.OK);
+					}
+					else return new ResponseEntity<>("Product not saved", HttpStatus.NO_CONTENT);
+				}
+				else return new ResponseEntity<>("Not allowed", HttpStatus.UNAUTHORIZED);
+		}catch(Exception e) {
+			return new ResponseEntity<>("Couldn't update product price", HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	// Method to delete a product.
 	@Transactional
 	public ResponseEntity<String> deleteProduct(HttpServletRequest request, String idProduct) {
 		try {
 			byte[] valueDecoded = Base64.decodeBase64(request.getHeader("token"));
 			Gson usrGson = new Gson();
 			StoreUser user= usrGson.fromJson(new String(valueDecoded), StoreUser.class);
-			
-			if(user.getRole()==1) {
-				int product = Integer.parseInt(idProduct);
-				productRepository.deleteByIdProduct(product);	
-				return new ResponseEntity<>("Done", HttpStatus.OK);
+			System.out.println(user.getRole());
+			if(user.getRole()==0) { // Only admins can delete products
+				Integer product = Integer.parseInt(idProduct);
+				productRepository.deleteByIdProduct(product.longValue());	
+				return new ResponseEntity<>(idProduct, HttpStatus.OK);
 			}
 			else {
 				return new ResponseEntity<>("Not allowed", HttpStatus.UNAUTHORIZED);
 			}
 		}catch(Exception e) {
 			System.out.println(e.getMessage());
-			return new ResponseEntity<>("Not allowed", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("Couldn't delete product", HttpStatus.BAD_REQUEST);
 		}
 	}
 	

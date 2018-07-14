@@ -24,6 +24,6 @@ public interface ProductRepository extends JpaRepository<Product, Long>{
 	public List<Product> findAllByOrderByProductAsc(Pageable page);
 	
 	// Deleting methods
-	public void deleteByIdProduct(Integer id);
+	public void deleteByIdProduct(Long idProduct);
 	
 }
