@@ -75,7 +75,7 @@ public class MainController{
 	}
 	
 	// Buying a product
-	@RequestMapping(value="/products/buyProduct", method=RequestMethod.PUT)
+	@RequestMapping(value="/products/buyProduct", method=RequestMethod.PATCH)
 	@ResponseBody
 	public ResponseEntity<String> buyProduct(HttpServletRequest request, @Validated @RequestBody PurchaseDTO purchaseDTO, BindingResult res) {
 		ResponseEntity<String> results = prs.buyProduct(request, purchaseDTO, res);
