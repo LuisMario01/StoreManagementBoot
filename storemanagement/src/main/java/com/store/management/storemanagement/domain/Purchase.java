@@ -19,11 +19,11 @@ public class Purchase {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long idPurchase;
 	
-	@ManyToOne(fetch=FetchType.EAGER)
+	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="idUser")
 	private StoreUser user;
 	
-	@ManyToOne(fetch=FetchType.EAGER)
+	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="idProduct")
 	private Product product;
 	

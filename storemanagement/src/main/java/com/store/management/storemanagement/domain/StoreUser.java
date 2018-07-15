@@ -33,7 +33,7 @@ public class StoreUser {
 	@Column(name="role")
 	private Integer role;
 	
-	@OneToMany(mappedBy="user", fetch=FetchType.EAGER)
+	@OneToMany(mappedBy="user", fetch=FetchType.LAZY)
 	private Collection<Purchase> purchases = new ArrayList<Purchase>();
 	
 	protected StoreUser() {}

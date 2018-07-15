@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -150,42 +152,52 @@ public class ProductRepositoryService {
 	//Buying a product - Performed with a DTO object of the purchase.
 	//Requires user or admin authorization
 	@Transactional
-	public ResponseEntity<String> buyProduct(HttpServletRequest request, PurchaseDTO purchaseDTO) {
-		try {
-			byte[] valueDecoded = Base64.decodeBase64(request.getHeader("token"));
-			Gson usrGson = new Gson();
-			StoreUser user= usrGson.fromJson(new String(valueDecoded), StoreUser.class);
-			System.out.println(user.getUsername()+user.getPassword());
-			
-			if(user.getRole()==0 || user.getRole()==1) { // admins can also buy.
-				Gson gson = new GsonBuilder().setPrettyPrinting().create();
-				Product buyingProduct = new Product();
-				Purchase newPurchase = new Purchase();
-				buyingProduct = productRepository.findByIdProduct(purchaseDTO.getIdProduct().longValue());
-				if(buyingProduct!=null) {
-					int newStock = buyingProduct.getStock()-purchaseDTO.getAmount(); //Decreasing stock w/purchase
-					if(newStock>=0) {
-						buyingProduct.setStock(newStock); //Setting new stock
-						buyingProduct = productRepository.save(buyingProduct);
-						newPurchase = purchaseRepository.save(PurchaseUtil.createPurchase(purchaseDTO, user, buyingProduct));
-						if(newPurchase!=null && buyingProduct != null) {
-							return new ResponseEntity<String>("Done", HttpStatus.OK);
+	public ResponseEntity<String> buyProduct(HttpServletRequest request, PurchaseDTO purchaseDTO, BindingResult res) {
+		if(!res.hasErrors()) {
+			try {
+				byte[] valueDecoded = Base64.decodeBase64(request.getHeader("token"));
+				Gson usrGson = new Gson();
+				StoreUser user= usrGson.fromJson(new String(valueDecoded), StoreUser.class);
+				System.out.println(user.getUsername()+user.getPassword());
+				
+				if(user.getRole()==0 || user.getRole()==1) { // admins can also buy.
+					Gson gson = new GsonBuilder().setPrettyPrinting().create();
+					Product buyingProduct = new Product();
+					Purchase newPurchase = new Purchase();
+					buyingProduct = productRepository.findByIdProduct(purchaseDTO.getIdProduct().longValue());
+					if(buyingProduct!=null) {
+						int newStock = buyingProduct.getStock()-purchaseDTO.getAmount(); //Decreasing stock w/purchase
+						if(newStock>=0) {
+							buyingProduct.setStock(newStock); //Setting new stock
+							buyingProduct = productRepository.save(buyingProduct);
+							newPurchase = purchaseRepository.save(PurchaseUtil.createPurchase(purchaseDTO, user, buyingProduct));
+							if(newPurchase!=null && buyingProduct != null) {
+								return new ResponseEntity<String>("Done", HttpStatus.OK);
+							}
+							else
+								return new ResponseEntity<String>("Transaction not completed", HttpStatus.NOT_MODIFIED);
+						}else {
+							return new ResponseEntity<String>("Insufficient stock", HttpStatus.NOT_ACCEPTABLE);
 						}
-						else
-							return new ResponseEntity<String>("Transaction not completed", HttpStatus.NOT_MODIFIED);
-					}else {
-						return new ResponseEntity<String>("Insufficient stock", HttpStatus.NOT_ACCEPTABLE);
 					}
+					else return new ResponseEntity<String>("Product doesn't exist", HttpStatus.NO_CONTENT);
 				}
-				else return new ResponseEntity<String>("Product doesn't exist", HttpStatus.NO_CONTENT);
+				else {
+					return new ResponseEntity<>("Not allowed", HttpStatus.UNAUTHORIZED);
+				}
 			}
-			else {
-				return new ResponseEntity<>("Not allowed", HttpStatus.UNAUTHORIZED);
+			catch(Exception e) {
+				System.out.println(e.getMessage());
+				return new ResponseEntity<>("Transaction not completed", HttpStatus.BAD_REQUEST);
 			}
 		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			return new ResponseEntity<>("Transaction not completed", HttpStatus.BAD_REQUEST);
+		else {
+			List<FieldError> errors = res.getFieldErrors();
+			String response = "";
+		    for (FieldError error : errors ) {
+		        response += error.getDefaultMessage();
+		    }
+			return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST); 
 		}
 			
 	}

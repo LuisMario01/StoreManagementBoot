@@ -11,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 // Domain class for Product in database
 @Entity
@@ -20,12 +21,15 @@ public class Product {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long idProduct;
 	
+	@NotNull(message = "Product name cannot be null")
 	@Column(name="product")
 	private String product;
 	
+	@NotNull(message = "Product price cannot be null")
 	@Column(name="price")
 	private Double price;
 	
+	@NotNull(message = "Product stock cannot be null")
 	@Column(name="stock")
 	private Integer stock;
 	

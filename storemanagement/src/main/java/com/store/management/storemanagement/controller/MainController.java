@@ -4,7 +4,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -76,8 +77,8 @@ public class MainController{
 	// Buying a product
 	@RequestMapping(value="/products/buyProduct", method=RequestMethod.PUT)
 	@ResponseBody
-	public ResponseEntity<String> buyProduct(HttpServletRequest request, @RequestBody PurchaseDTO purchaseDTO) {
-		ResponseEntity<String> results = prs.buyProduct(request, purchaseDTO);
+	public ResponseEntity<String> buyProduct(HttpServletRequest request, @Validated @RequestBody PurchaseDTO purchaseDTO, BindingResult res) {
+		ResponseEntity<String> results = prs.buyProduct(request, purchaseDTO, res);
 		return results;
 	}
 	
