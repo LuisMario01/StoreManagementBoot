@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name="purchase")
@@ -19,17 +20,21 @@ public class Purchase {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long idPurchase;
 	
+	@NotNull(message="Field: idUser cannot be null")
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="idUser")
 	private StoreUser user;
 	
+	@NotNull(message="Field: idProduct cannot be null")
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="idProduct")
 	private Product product;
 	
+	@NotNull(message="Field: amount cannot be null")
 	@Column(name="amount")
 	private Integer amount;
 	
+	@NotNull(message="Field: date cannot be null")
 	@Column(name="date")
 	private Date date;
 

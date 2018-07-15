@@ -23,16 +23,16 @@ public class Product {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long idProduct;
 	
-	@NotNull(message = "Product name cannot be null")
-	@Column(name="product")
+	@NotNull(message = "Field: product cannot be null")
+	@Column(name="product", length=20)
 	private String product;
 	
-	@NotNull(message = "Product price cannot be null")
+	@NotNull(message = "Field: productPrice cannot be null")
 	@DecimalMin(value = "0.01", inclusive = true, message="Price must be equal or greater than 0.01$")
 	@Column(name="price")
 	private Double price;
 	
-	@NotNull(message = "Product stock cannot be null")
+	@NotNull(message = "Field: stock cannot be null")
 	@Min(value=0, message="Stock must be equal or greater than 0")
 	@Column(name="stock")
 	private Integer stock;

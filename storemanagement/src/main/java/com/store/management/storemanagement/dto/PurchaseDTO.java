@@ -5,10 +5,10 @@ import javax.validation.constraints.NotNull;
 
 // Data Transfer Object to add a new purchase to database
 public class PurchaseDTO {
-	@NotNull(message = "Field: idProduct must not be empty")
+	@NotNull(message = "Field: idProduct cannot be null")
 	private Integer idProduct;
 	
-	@NotNull(message = "Field: Amount must not be empty")
+	@NotNull(message = "Field: Amount canno be null")
 	@Min(message="Amount must be equal or greater than 1", value=1)
 	private Integer amount;
 

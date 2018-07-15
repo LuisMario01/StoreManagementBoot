@@ -8,6 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name="likes")
@@ -16,10 +17,12 @@ public class Like {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long idLike;
 	
+	@NotNull
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="user")
 	private StoreUser user;
 	
+	@NotNull
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="idProduct")
 	private Product product;

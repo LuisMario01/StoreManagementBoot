@@ -12,6 +12,8 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotNull;
 
 // Domain class for StoreUser in database
 @Entity
@@ -24,13 +26,16 @@ public class StoreUser {
 	private Long idUser;
 	
 	//Make sure column is unique, since this is used to identify a user from login.
-	@Column(name="username", unique = true)
+	@NotNull(message = "Field: username cannot be null")
+	@Column(name="username", unique = true, length=8)
 	private String username;
 	
-	@Column(name="password")
+	@Column(name="password", length=8)
+	@NotNull(message = "Field: password cannot be null")
 	private String password;
 	
 	@Column(name="role")
+	@NotNull(message = "Field: role cannot be null")
 	private Integer role;
 	
 	@OneToMany(mappedBy="user", fetch=FetchType.LAZY)
@@ -76,10 +81,4 @@ public class StoreUser {
 	public void setPurchases(Collection<Purchase> purchases) {
 		this.purchases = purchases;
 	}
-
-	@Override
-	public String toString() {
-		return "";
-	}
-	
 }

@@ -52,6 +52,8 @@ public class ProductRepositoryService {
 			productRepository.save(new Product("Milk", 1.5, 100));
 			productRepository.save(new Product("Doritos", 0.75, 200));
 			productRepository.save(new Product("Almonds", 2.0, 89));
+			productRepository.save(new Product("Soda", 0.65, 99));
+			productRepository.save(new Product("Nuts", 2.55, 67));
 			result = true;
 		}catch(Exception e) {
 			result = false;
@@ -69,7 +71,7 @@ public class ProductRepositoryService {
 			String json = gson.toJson(products);
 			response = new ResponseEntity<String>(json, HttpStatus.OK);
 		}catch(Exception e){
-			response = new ResponseEntity<String>("Failed when loading products", HttpStatus.NO_CONTENT);
+			response = new ResponseEntity<String>("Failed when loading products", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		return response;
 	}
@@ -93,7 +95,7 @@ public class ProductRepositoryService {
 			}
 			
 		}catch(Exception e){
-			response = new ResponseEntity<String>("Failed", HttpStatus.NO_CONTENT);
+			response = new ResponseEntity<String>("Transaction not completed. Couldn't load data from parameters.", HttpStatus.BAD_REQUEST);
 		}
 		return response;
 	}
@@ -116,7 +118,7 @@ public class ProductRepositoryService {
 		    return new ResponseEntity<>(json, HttpStatus.OK);
 		}catch(Exception e) {
 			System.out.println(e.getMessage());
-			return new ResponseEntity<>("Product not found", HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>("Transaction not completed. Couldn't load data from parameters.", HttpStatus.BAD_REQUEST);
 		}
 	}
 	
@@ -136,8 +138,7 @@ public class ProductRepositoryService {
 				savingProduct.setProduct(productDTO.getProduct());
 				savingProduct.setPrice(productDTO.getPrice());
 				savingProduct.setStock(productDTO.getStock());
-				Product result = new Product();
-				result = productRepository.save(savingProduct);
+				Product result = productRepository.save(savingProduct);
 				return new ResponseEntity<>(gson.toJson(result), HttpStatus.OK); //Shows just-saved product*/
 			}
 			else {
@@ -146,7 +147,7 @@ public class ProductRepositoryService {
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
-			return new ResponseEntity<>("Product not saved", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("Product was not saved", HttpStatus.BAD_REQUEST);
 		}
 		}
 		else {
@@ -185,12 +186,12 @@ public class ProductRepositoryService {
 								return new ResponseEntity<String>("Done", HttpStatus.OK);
 							}
 							else
-								return new ResponseEntity<String>("Transaction not completed", HttpStatus.NOT_MODIFIED);
+								return new ResponseEntity<String>("Transaction not completed. Error when saving purchase", HttpStatus.INTERNAL_SERVER_ERROR);
 						}else {
-							return new ResponseEntity<String>("Insufficient stock", HttpStatus.NOT_ACCEPTABLE);
+							return new ResponseEntity<String>("Insufficient stock to perform purchase.", HttpStatus.BAD_REQUEST);
 						}
 					}
-					else return new ResponseEntity<String>("Product doesn't exist", HttpStatus.NO_CONTENT);
+					else return new ResponseEntity<String>("Product doesn't exist", HttpStatus.NOT_FOUND);
 				}
 				else {
 					return new ResponseEntity<>("Not allowed", HttpStatus.UNAUTHORIZED);
@@ -198,7 +199,7 @@ public class ProductRepositoryService {
 			}
 			catch(Exception e) {
 				System.out.println(e.getMessage());
-				return new ResponseEntity<>("Transaction not completed", HttpStatus.BAD_REQUEST);
+				return new ResponseEntity<>("Transaction not completed. Couldn't load data from parameters.", HttpStatus.BAD_REQUEST);
 			}
 		}
 		else {
@@ -234,7 +235,7 @@ public class ProductRepositoryService {
 						return new ResponseEntity<>("Done", HttpStatus.OK);
 					}
 					else {
-						return new ResponseEntity<>("Transaction failed", HttpStatus.NO_CONTENT);
+						return new ResponseEntity<>("Transaction failed. Couldn't create like", HttpStatus.INTERNAL_SERVER_ERROR);
 					}
 				}
 				else {
@@ -242,7 +243,7 @@ public class ProductRepositoryService {
 				}
 			}
 			catch(Exception e) {
-				return new ResponseEntity<>("Transaction not completed", HttpStatus.BAD_REQUEST);
+				return new ResponseEntity<>("Transaction not completed. Couldn't load data from parameters.", HttpStatus.BAD_REQUEST);
 			}
 		}
 		else {
@@ -274,7 +275,7 @@ public class ProductRepositoryService {
 							productLogRepository.save(productLog);
 							return new ResponseEntity<>("Done", HttpStatus.OK);
 						}
-						else return new ResponseEntity<>("Product not saved", HttpStatus.NO_CONTENT);
+						else return new ResponseEntity<>("Product not saved. Couldn't create product", HttpStatus.INTERNAL_SERVER_ERROR);
 					}
 					else return new ResponseEntity<>("Not allowed", HttpStatus.UNAUTHORIZED);
 			}catch(Exception e) {
@@ -302,7 +303,7 @@ public class ProductRepositoryService {
 			if(user.getRole()==0) { // Only admins can delete products
 				Integer product = Integer.parseInt(idProduct);
 				productRepository.deleteByIdProduct(product.longValue());	
-				return new ResponseEntity<>(idProduct, HttpStatus.OK);
+				return new ResponseEntity<>("Done", HttpStatus.OK);
 			}
 			else {
 				return new ResponseEntity<>("Not allowed", HttpStatus.UNAUTHORIZED);
