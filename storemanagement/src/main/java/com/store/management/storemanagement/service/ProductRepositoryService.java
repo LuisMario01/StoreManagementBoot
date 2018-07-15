@@ -215,33 +215,43 @@ public class ProductRepositoryService {
 	// Method to like a product
 	// Requires user or admin authorization
 	@Transactional
-	public ResponseEntity<String> likeProduct(HttpServletRequest request, LikeDTO likeDTO) {
-		try {
-			byte[] valueDecoded = Base64.decodeBase64(request.getHeader("token"));
-			Gson usrGson = new Gson();
-			StoreUser user= usrGson.fromJson(new String(valueDecoded), StoreUser.class);
-			
-			if(user.getRole()==0 || user.getRole()==1) {
-				Gson gson = new GsonBuilder().setPrettyPrinting().create();
-				Like newLike = new Like();
-				Product product = productRepository.findByIdProduct(likeDTO.getIdProduct().longValue());
-				newLike.setProduct(product);
-				newLike.setUser(user);
-				newLike = likeRepository.save(newLike);
+	public ResponseEntity<String> likeProduct(HttpServletRequest request, LikeDTO likeDTO, BindingResult res) {
+		if(!res.hasErrors()) {
+			try {
+				byte[] valueDecoded = Base64.decodeBase64(request.getHeader("token"));
+				Gson usrGson = new Gson();
+				StoreUser user= usrGson.fromJson(new String(valueDecoded), StoreUser.class);
 				
-				if(newLike!=null) {
-					return new ResponseEntity<>("Done", HttpStatus.OK);
+				if(user.getRole()==0 || user.getRole()==1) {
+					Gson gson = new GsonBuilder().setPrettyPrinting().create();
+					Like newLike = new Like();
+					Product product = productRepository.findByIdProduct(likeDTO.getIdProduct().longValue());
+					newLike.setProduct(product);
+					newLike.setUser(user);
+					newLike = likeRepository.save(newLike);
+					
+					if(newLike!=null) {
+						return new ResponseEntity<>("Done", HttpStatus.OK);
+					}
+					else {
+						return new ResponseEntity<>("Transaction failed", HttpStatus.NO_CONTENT);
+					}
 				}
 				else {
-					return new ResponseEntity<>("Transaction failed", HttpStatus.NO_CONTENT);
+					return new ResponseEntity<>("Not allowed", HttpStatus.UNAUTHORIZED);
 				}
 			}
-			else {
-				return new ResponseEntity<>("Not allowed", HttpStatus.UNAUTHORIZED);
+			catch(Exception e) {
+				return new ResponseEntity<>("Transaction not completed", HttpStatus.BAD_REQUEST);
 			}
 		}
-		catch(Exception e) {
-			return new ResponseEntity<>("Transaction not completed", HttpStatus.BAD_REQUEST);
+		else {
+			List<FieldError> errors = res.getFieldErrors();
+			String response = "";
+		    for (FieldError error : errors ) {
+		        response += error.getDefaultMessage()+". ";
+		    }
+			return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST); 
 		}
 	}
 	

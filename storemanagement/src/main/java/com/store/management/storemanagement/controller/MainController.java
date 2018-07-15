@@ -84,8 +84,8 @@ public class MainController{
 	
 	@RequestMapping(value="/products/likeProduct", method=RequestMethod.POST)
 	@ResponseBody
-	public ResponseEntity<String> likeProduct(HttpServletRequest request, @RequestBody LikeDTO likeDTO) {
-		ResponseEntity<String> results = prs.likeProduct(request, likeDTO);
+	public ResponseEntity<String> likeProduct(HttpServletRequest request, @Validated @RequestBody LikeDTO likeDTO, BindingResult res) {
+		ResponseEntity<String> results = prs.likeProduct(request, likeDTO, res);
 		return results;
 	}
 	
