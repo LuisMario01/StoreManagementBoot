@@ -69,8 +69,8 @@ public class MainController{
 	// Adding a new product to database
 	@RequestMapping(value="/products/addProduct", method=RequestMethod.POST)
 	@ResponseBody
-	public ResponseEntity<String> saveProduct(HttpServletRequest request, @RequestBody ProductDTO productDTO) {	
-		ResponseEntity<String> results = prs.saveProduct(request, productDTO);
+	public ResponseEntity<String> saveProduct(HttpServletRequest request, @Validated @RequestBody ProductDTO productDTO, BindingResult res) {	
+		ResponseEntity<String> results = prs.saveProduct(request, productDTO, res);
 		return results;
 	}
 	

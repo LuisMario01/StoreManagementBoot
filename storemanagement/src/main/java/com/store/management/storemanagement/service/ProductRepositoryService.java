@@ -122,7 +122,8 @@ public class ProductRepositoryService {
 	
 	@Transactional
 	//Saving a product. Requires admin authorization.
-	public ResponseEntity<String> saveProduct(HttpServletRequest request, ProductDTO productDTO) {	
+	public ResponseEntity<String> saveProduct(HttpServletRequest request, ProductDTO productDTO, BindingResult res) {
+		if(!res.hasErrors()) {
 		try {
 			byte[] valueDecoded = Base64.decodeBase64(request.getHeader("token"));
 			Gson usrGson = new Gson();
@@ -146,6 +147,15 @@ public class ProductRepositoryService {
 		catch(Exception e) {
 			System.out.println(e.getMessage());
 			return new ResponseEntity<>("Product not saved", HttpStatus.BAD_REQUEST);
+		}
+		}
+		else {
+			List<FieldError> errors = res.getFieldErrors();
+			String response = "";
+		    for (FieldError error : errors ) {
+		        response += error.getDefaultMessage()+". ";
+		    }
+			return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST); 
 		}
 	}
 	
@@ -195,7 +205,7 @@ public class ProductRepositoryService {
 			List<FieldError> errors = res.getFieldErrors();
 			String response = "";
 		    for (FieldError error : errors ) {
-		        response += error.getDefaultMessage();
+		        response += error.getDefaultMessage()+". ";
 		    }
 			return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST); 
 		}
@@ -265,7 +275,7 @@ public class ProductRepositoryService {
 			List<FieldError> errors = res.getFieldErrors();
 			String response = "";
 		    for (FieldError error : errors ) {
-		        response += error.getDefaultMessage();
+		        response += error.getDefaultMessage()+". ";
 		    }
 			return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST); 
 		}
