@@ -28,6 +28,7 @@ import com.store.management.storemanagement.repository.LikeRepository;
 import com.store.management.storemanagement.repository.ProductLogRepository;
 import com.store.management.storemanagement.repository.ProductRepository;
 import com.store.management.storemanagement.repository.PurchaseRepository;
+import com.store.management.storemanagement.util.MessageWrapper;
 import com.store.management.storemanagement.util.ProductLogUtil;
 import com.store.management.storemanagement.util.PurchaseUtil;
 
@@ -71,7 +72,9 @@ public class ProductRepositoryService {
 			String json = gson.toJson(products);
 			response = new ResponseEntity<String>(json, HttpStatus.OK);
 		}catch(Exception e){
-			response = new ResponseEntity<String>("Failed when loading products", HttpStatus.INTERNAL_SERVER_ERROR);
+			Gson gson = new GsonBuilder().setPrettyPrinting().create();
+			MessageWrapper mw = new MessageWrapper(true, "Failed when loading products");
+			response = new ResponseEntity<String>(gson.toJson(mw), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		return response;
 	}
@@ -95,7 +98,9 @@ public class ProductRepositoryService {
 			}
 			
 		}catch(Exception e){
-			response = new ResponseEntity<String>("Transaction not completed. Couldn't load data from parameters.", HttpStatus.BAD_REQUEST);
+			Gson gson = new GsonBuilder().setPrettyPrinting().create();
+			MessageWrapper mw = new MessageWrapper(true, "Transaction not completed. Couldn't load data from parameters.");
+			response = new ResponseEntity<String>(gson.toJson(mw), HttpStatus.BAD_REQUEST);
 		}
 		return response;
 	}
@@ -113,12 +118,12 @@ public class ProductRepositoryService {
 		try {
 			Gson gson = new GsonBuilder().setPrettyPrinting().create();
 			Product product = productRepository.findByProduct(productParam);
-			System.out.println("Value of product"+product.getProduct());
 		    String json = gson.toJson(product);
 		    return new ResponseEntity<>(json, HttpStatus.OK);
 		}catch(Exception e) {
-			System.out.println(e.getMessage());
-			return new ResponseEntity<>("Transaction not completed. Couldn't load data from parameters.", HttpStatus.BAD_REQUEST);
+			Gson gson = new GsonBuilder().setPrettyPrinting().create();
+			MessageWrapper mw = new MessageWrapper(true, "Transaction not completed. Couldn't load data from parameters.");
+			return new ResponseEntity<>(gson.toJson(mw), HttpStatus.BAD_REQUEST);
 		}
 	}
 	
@@ -129,11 +134,10 @@ public class ProductRepositoryService {
 		try {
 			byte[] valueDecoded = Base64.decodeBase64(request.getHeader("token"));
 			Gson usrGson = new Gson();
-			System.out.println(usrGson.toString());
 			StoreUser user= usrGson.fromJson(new String(valueDecoded), StoreUser.class);
 			// Role 0 for admin
+			Gson gson = new GsonBuilder().setPrettyPrinting().create();
 			if(user.getRole()==0) {
-				Gson gson = new GsonBuilder().setPrettyPrinting().create();
 				Product savingProduct = new Product();
 				savingProduct.setProduct(productDTO.getProduct());
 				savingProduct.setPrice(productDTO.getPrice());
@@ -142,21 +146,25 @@ public class ProductRepositoryService {
 				return new ResponseEntity<>(gson.toJson(result), HttpStatus.OK); //Shows just-saved product*/
 			}
 			else {
-				return new ResponseEntity<>("Not allowed", HttpStatus.UNAUTHORIZED);
+				MessageWrapper mw = new MessageWrapper(true,"Not allowed");
+				return new ResponseEntity<>(gson.toJson(mw), HttpStatus.UNAUTHORIZED);
 			}		
 		}
 		catch(Exception e) {
-			System.out.println(e.getMessage());
-			return new ResponseEntity<>("Product was not saved", HttpStatus.BAD_REQUEST);
+			Gson gson = new Gson();
+			MessageWrapper mw = new MessageWrapper(true,"Product was not saved");
+			return new ResponseEntity<>(gson.toJson(mw), HttpStatus.BAD_REQUEST);
 		}
 		}
 		else {
+			Gson gson = new Gson();
 			List<FieldError> errors = res.getFieldErrors();
 			String response = "";
 		    for (FieldError error : errors ) {
 		        response += error.getDefaultMessage()+". ";
 		    }
-			return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST); 
+			MessageWrapper mw = new MessageWrapper(true,response);
+			return new ResponseEntity<>(gson.toJson(mw), HttpStatus.BAD_REQUEST); 
 		}
 	}
 	
@@ -183,23 +191,33 @@ public class ProductRepositoryService {
 							buyingProduct = productRepository.save(buyingProduct);
 							newPurchase = purchaseRepository.save(PurchaseUtil.createPurchase(purchaseDTO, user, buyingProduct));
 							if(newPurchase!=null && buyingProduct != null) {
-								return new ResponseEntity<String>("Done", HttpStatus.OK);
+								MessageWrapper mw = new MessageWrapper(false, "Done");
+								return new ResponseEntity<String>(gson.toJson(mw), HttpStatus.OK);
 							}
-							else
-								return new ResponseEntity<String>("Transaction not completed. Error when saving purchase", HttpStatus.INTERNAL_SERVER_ERROR);
+							else {
+								MessageWrapper mw = new MessageWrapper(true, "Transaction not completed. Error when saving purchase");
+								return new ResponseEntity<String>(gson.toJson(mw), HttpStatus.INTERNAL_SERVER_ERROR);
+							}
 						}else {
-							return new ResponseEntity<String>("Insufficient stock to perform purchase.", HttpStatus.BAD_REQUEST);
+							MessageWrapper mw = new MessageWrapper(true, "Insufficient stock to perform purchase.");
+							return new ResponseEntity<String>(gson.toJson(mw), HttpStatus.BAD_REQUEST);
 						}
 					}
-					else return new ResponseEntity<String>("Product doesn't exist", HttpStatus.NOT_FOUND);
+					else {
+						MessageWrapper mw = new MessageWrapper(true, "Product doesn't exist");
+						return new ResponseEntity<String>(gson.toJson(mw), HttpStatus.NOT_FOUND);
+					}
 				}
 				else {
-					return new ResponseEntity<>("Not allowed", HttpStatus.UNAUTHORIZED);
+					Gson gson = new GsonBuilder().setPrettyPrinting().create();
+					MessageWrapper mw = new MessageWrapper(true, "Not allowed");
+					return new ResponseEntity<>(gson.toJson(mw), HttpStatus.UNAUTHORIZED);
 				}
 			}
 			catch(Exception e) {
-				System.out.println(e.getMessage());
-				return new ResponseEntity<>("Transaction not completed. Couldn't load data from parameters.", HttpStatus.BAD_REQUEST);
+				Gson gson = new GsonBuilder().setPrettyPrinting().create();
+				MessageWrapper mw = new MessageWrapper(true, "Transaction not completed. Couldn't load data from parameters.");
+				return new ResponseEntity<>(gson.toJson(mw), HttpStatus.BAD_REQUEST);
 			}
 		}
 		else {
@@ -208,7 +226,9 @@ public class ProductRepositoryService {
 		    for (FieldError error : errors ) {
 		        response += error.getDefaultMessage()+". ";
 		    }
-			return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST); 
+		    Gson gson = new GsonBuilder().setPrettyPrinting().create();
+			MessageWrapper mw = new MessageWrapper(true, response);
+			return new ResponseEntity<>(gson.toJson(mw), HttpStatus.BAD_REQUEST); 
 		}
 			
 	}
@@ -232,18 +252,24 @@ public class ProductRepositoryService {
 					newLike = likeRepository.save(newLike);
 					
 					if(newLike!=null) {
-						return new ResponseEntity<>("Done", HttpStatus.OK);
+						MessageWrapper mw = new MessageWrapper(false, "Done");
+						return new ResponseEntity<String>(gson.toJson(mw), HttpStatus.OK);
 					}
 					else {
-						return new ResponseEntity<>("Transaction failed. Couldn't create like", HttpStatus.INTERNAL_SERVER_ERROR);
+						MessageWrapper mw = new MessageWrapper(true, "Transaction failed. Couldn't create like");
+						return new ResponseEntity<>(gson.toJson(mw), HttpStatus.INTERNAL_SERVER_ERROR);
 					}
 				}
 				else {
-					return new ResponseEntity<>("Not allowed", HttpStatus.UNAUTHORIZED);
+					Gson gson = new Gson();
+					MessageWrapper mw = new MessageWrapper(true, "Not allowed");
+					return new ResponseEntity<>(gson.toJson(mw), HttpStatus.UNAUTHORIZED);
 				}
 			}
 			catch(Exception e) {
-				return new ResponseEntity<>("Transaction not completed. Couldn't load data from parameters.", HttpStatus.BAD_REQUEST);
+				Gson gson = new Gson();
+				MessageWrapper mw = new MessageWrapper(true, "Transaction not completed. Couldn't load data from parameters.");
+				return new ResponseEntity<>(gson.toJson(mw), HttpStatus.BAD_REQUEST);
 			}
 		}
 		else {
@@ -252,7 +278,9 @@ public class ProductRepositoryService {
 		    for (FieldError error : errors ) {
 		        response += error.getDefaultMessage()+". ";
 		    }
-			return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST); 
+		    Gson gson = new Gson();
+			MessageWrapper mw = new MessageWrapper(true, response);
+			return new ResponseEntity<>(gson.toJson(mw), HttpStatus.BAD_REQUEST); 
 		}
 	}
 	
@@ -273,13 +301,22 @@ public class ProductRepositoryService {
 							productRepository.save(product);
 							ProductLog productLog = ProductLogUtil.createProductLog(buyingProduct, previousPrice);
 							productLogRepository.save(productLog);
-							return new ResponseEntity<>("Done", HttpStatus.OK);
+							MessageWrapper mw = new MessageWrapper(false, "Done");
+							return new ResponseEntity<String>(gson.toJson(mw), HttpStatus.OK);
 						}
-						else return new ResponseEntity<>("Product not saved. Couldn't create product", HttpStatus.INTERNAL_SERVER_ERROR);
+						else {
+							MessageWrapper mw = new MessageWrapper(true, "Product not saved. Couldn't create product");
+							return new ResponseEntity<>(gson.toJson(mw), HttpStatus.INTERNAL_SERVER_ERROR);
+						}
 					}
-					else return new ResponseEntity<>("Not allowed", HttpStatus.UNAUTHORIZED);
+					else{
+						MessageWrapper mw = new MessageWrapper(true, "Not allowed");
+						return new ResponseEntity<>(usrGson.toJson(mw), HttpStatus.UNAUTHORIZED);
+					}
 			}catch(Exception e) {
-				return new ResponseEntity<>("Couldn't update product price", HttpStatus.BAD_REQUEST);
+				Gson gson = new Gson();
+				MessageWrapper mw = new MessageWrapper(true, "Not allowed");
+				return new ResponseEntity<>(gson.toJson(mw), HttpStatus.BAD_REQUEST);
 			}
 		}
 		else {
@@ -288,7 +325,9 @@ public class ProductRepositoryService {
 		    for (FieldError error : errors ) {
 		        response += error.getDefaultMessage()+". ";
 		    }
-			return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST); 
+		    Gson gson = new Gson();
+			MessageWrapper mw = new MessageWrapper(true, response);
+			return new ResponseEntity<>(gson.toJson(mw), HttpStatus.BAD_REQUEST); 
 		}
 	}
 	
@@ -306,11 +345,13 @@ public class ProductRepositoryService {
 				return new ResponseEntity<>("Done", HttpStatus.OK);
 			}
 			else {
-				return new ResponseEntity<>("Not allowed", HttpStatus.UNAUTHORIZED);
+				MessageWrapper mw = new MessageWrapper(false, "Not allowed");
+				return new ResponseEntity<>(usrGson.toJson(mw), HttpStatus.UNAUTHORIZED);
 			}
 		}catch(Exception e) {
-			System.out.println(e.getMessage());
-			return new ResponseEntity<>("Couldn't delete product", HttpStatus.BAD_REQUEST);
+			Gson gson = new Gson();
+			MessageWrapper mw = new MessageWrapper(false, "Couldn't delete product");
+			return new ResponseEntity<>(gson.toJson(mw), HttpStatus.BAD_REQUEST);
 		}
 	}
 	
