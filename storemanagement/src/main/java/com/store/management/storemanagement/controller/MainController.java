@@ -93,8 +93,8 @@ public class MainController{
 	//Authorization as admin required
 	@RequestMapping(value="/products/updateProduct", method=RequestMethod.PUT)
 	@ResponseBody
-	public ResponseEntity<String> alterProductPrice(HttpServletRequest request, @RequestBody Product product) {
-		ResponseEntity<String> results = prs.alterProductPrice(request, product);
+	public ResponseEntity<String> alterProductPrice(HttpServletRequest request, @Validated @RequestBody Product product, BindingResult res) {
+		ResponseEntity<String> results = prs.alterProductPrice(request, product, res);
 		return results;
 	}
 	

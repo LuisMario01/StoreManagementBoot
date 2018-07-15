@@ -11,6 +11,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 // Domain class for Product in database
@@ -26,10 +28,12 @@ public class Product {
 	private String product;
 	
 	@NotNull(message = "Product price cannot be null")
+	@DecimalMin(value = "0.01", inclusive = true, message="Price must be equal or greater than 0.01$")
 	@Column(name="price")
 	private Double price;
 	
 	@NotNull(message = "Product stock cannot be null")
+	@Min(value=0, message="Stock must be equal or greater than 0")
 	@Column(name="stock")
 	private Integer stock;
 	

@@ -237,27 +237,37 @@ public class ProductRepositoryService {
 	
 	// Method to update product price
 	@Transactional
-	public ResponseEntity<String> alterProductPrice(HttpServletRequest request, Product product) {
-		try {
-				byte[] valueDecoded = Base64.decodeBase64(request.getHeader("token"));
-				Gson usrGson = new Gson();
-				StoreUser user= usrGson.fromJson(new String(valueDecoded), StoreUser.class);
-				if(user.getRole()==0) { //Only admins can update price
-					Gson gson = new GsonBuilder().setPrettyPrinting().create();
-					Product buyingProduct = new Product();
-					buyingProduct = productRepository.findByIdProduct(product.getIdProduct());
-					if(buyingProduct!=null){ // Product exists in database
-						Double previousPrice = buyingProduct.getPrice();
-						productRepository.save(product);
-						ProductLog productLog = ProductLogUtil.createProductLog(buyingProduct, previousPrice);
-						productLogRepository.save(productLog);
-						return new ResponseEntity<>("Done", HttpStatus.OK);
+	public ResponseEntity<String> alterProductPrice(HttpServletRequest request, Product product, BindingResult res) {
+		if(!res.hasErrors()) {
+			try {
+					byte[] valueDecoded = Base64.decodeBase64(request.getHeader("token"));
+					Gson usrGson = new Gson();
+					StoreUser user= usrGson.fromJson(new String(valueDecoded), StoreUser.class);
+					if(user.getRole()==0) { //Only admins can update price
+						Gson gson = new GsonBuilder().setPrettyPrinting().create();
+						Product buyingProduct = new Product();
+						buyingProduct = productRepository.findByIdProduct(product.getIdProduct());
+						if(buyingProduct!=null){ // Product exists in database
+							Double previousPrice = buyingProduct.getPrice();
+							productRepository.save(product);
+							ProductLog productLog = ProductLogUtil.createProductLog(buyingProduct, previousPrice);
+							productLogRepository.save(productLog);
+							return new ResponseEntity<>("Done", HttpStatus.OK);
+						}
+						else return new ResponseEntity<>("Product not saved", HttpStatus.NO_CONTENT);
 					}
-					else return new ResponseEntity<>("Product not saved", HttpStatus.NO_CONTENT);
-				}
-				else return new ResponseEntity<>("Not allowed", HttpStatus.UNAUTHORIZED);
-		}catch(Exception e) {
-			return new ResponseEntity<>("Couldn't update product price", HttpStatus.BAD_REQUEST);
+					else return new ResponseEntity<>("Not allowed", HttpStatus.UNAUTHORIZED);
+			}catch(Exception e) {
+				return new ResponseEntity<>("Couldn't update product price", HttpStatus.BAD_REQUEST);
+			}
+		}
+		else {
+			List<FieldError> errors = res.getFieldErrors();
+			String response = "";
+		    for (FieldError error : errors ) {
+		        response += error.getDefaultMessage();
+		    }
+			return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST); 
 		}
 	}
 	
