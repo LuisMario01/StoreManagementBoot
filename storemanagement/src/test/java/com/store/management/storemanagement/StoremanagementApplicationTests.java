@@ -16,7 +16,7 @@ public class StoremanagementApplicationTests {
 	
 	@Test
 	public void contextLoads() {
-		System.out.println("Lol");
+		System.out.println("Configuration for testing");
 	}
 	
 }
