@@ -2,6 +2,7 @@
 REST API for snack store management using Spring Boot and H2 Database. REST API for small snack store using Spring MVC.
 The API receives request under specific URLs, retrieving data from the database and performing actions associated with each
 URL.
+Database is generated using an h2 memory database, so you don't need any script in order to be able to load the schema nor the data.
 
 ## Getting Started
 
