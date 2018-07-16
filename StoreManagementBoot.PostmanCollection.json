@@ -1,0 +1,461 @@
+{
+	"info": {
+		"_postman_id": "ad163ca3-fdf7-4a58-8199-4701c8d07a33",
+		"name": "StoreManagementBoot",
+		"description": "Collection of requests to test SpringManagement API developed with spring boot",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Login for admin",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"username\":\"admin\",\n\t\"password\":\"pass\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"login"
+					]
+				},
+				"description": "Request using post, with parameters to login as admin. As a reponse you will receive the request token to be used in accessing pages that require you to have this role."
+			},
+			"response": []
+		},
+		{
+			"name": "Login for user",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"username\":\"user\",\n\t\"password\":\"pass\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"login"
+					]
+				},
+				"description": "Request using post, with parameters to login as user. As a reponse you will receive the request token to be used in accessing pages that require you to have this role."
+			},
+			"response": []
+		},
+		{
+			"name": "Showing all products default",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "http://localhost:8080/products",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"products"
+					]
+				},
+				"description": "Showing all products without sorting nor page"
+			},
+			"response": []
+		},
+		{
+			"name": "Showing all products with page and sort",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "http://localhost:8080/products?page=1&sort=0",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"products"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "sort",
+							"value": "0"
+						}
+					]
+				},
+				"description": "Showing all products with sorting by name and page 1."
+			},
+			"response": []
+		},
+		{
+			"name": "Search product by name",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "http://localhost:8080/products/Milk",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"products",
+						"Milk"
+					]
+				},
+				"description": "Showing results for product named Milk"
+			},
+			"response": []
+		},
+		{
+			"name": "Adding a product",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "token",
+						"value": "ewogICJpZFVzZXIiOiAxLAogICJ1c2VybmFtZSI6ICJhZG1pbiIsCiAgInBhc3N3b3JkIjogInBhc3MiLAogICJyb2xlIjogMCwKICAicHVyY2hhc2VzIjogW10KfQ=="
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"product\":\"CocaCola\",\n\t\"price\":1.5,\n\t\"stock\":100\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/products/addProduct",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"products",
+						"addProduct"
+					]
+				},
+				"description": "Add a product with specified content in json"
+			},
+			"response": []
+		},
+		{
+			"name": "Buying a product",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "token",
+						"value": "ewogICJpZFVzZXIiOiAyLAogICJ1c2VybmFtZSI6ICJ1c2VyIiwKICAicGFzc3dvcmQiOiAicGFzcyIsCiAgInJvbGUiOiAxLAogICJwdXJjaGFzZXMiOiBbXQp9"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"idProduct\":2,\n\t\"amount\":10\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/products/buyProduct",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"products",
+						"buyProduct"
+					]
+				},
+				"description": "Buys product Milk with role user"
+			},
+			"response": []
+		},
+		{
+			"name": "Liking a product",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "token",
+						"value": "ewogICJpZFVzZXIiOiAyLAogICJ1c2VybmFtZSI6ICJ1c2VyIiwKICAicGFzc3dvcmQiOiAicGFzcyIsCiAgInJvbGUiOiAxLAogICJwdXJjaGFzZXMiOiBbXQp9"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"idProduct\": 1\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/products/likeProduct",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"products",
+						"likeProduct"
+					]
+				},
+				"description": "Likes a product with user role"
+			},
+			"response": []
+		},
+		{
+			"name": "Delete a product",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "token",
+						"value": "ewogICJpZFVzZXIiOiAxLAogICJ1c2VybmFtZSI6ICJhZG1pbiIsCiAgInBhc3N3b3JkIjogInBhc3MiLAogICJyb2xlIjogMCwKICAicHVyY2hhc2VzIjogW10KfQ=="
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "http://localhost:8080/products/2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"products",
+						"2"
+					]
+				},
+				"description": "Delete a product with role admin"
+			},
+			"response": []
+		},
+		{
+			"name": "Update product",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "token",
+						"value": "ewogICJpZFVzZXIiOiAxLAogICJ1c2VybmFtZSI6ICJhZG1pbiIsCiAgInBhc3N3b3JkIjogInBhc3MiLAogICJyb2xlIjogMCwKICAicHVyY2hhc2VzIjogW10KfQ=="
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"idProduct\": 1,\n    \"product\": \"Chocolate\",\n    \"price\": 1.25,\n    \"stock\": 900,\n    \"purchases\": [],\n    \"likes\": [],\n    \"productlog\": []\n  }"
+				},
+				"url": {
+					"raw": "http://localhost:8080/products/updateProduct",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"products",
+						"updateProduct"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Buying a product: Validation",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "token",
+						"value": "ewogICJpZFVzZXIiOiAyLAogICJ1c2VybmFtZSI6ICJ1c2VyIiwKICAicGFzc3dvcmQiOiAicGFzcyIsCiAgInJvbGUiOiAxLAogICJwdXJjaGFzZXMiOiBbXQp9"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"idProduct\":2,\n\t\"amount\":-10\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/products/buyProduct",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"products",
+						"buyProduct"
+					]
+				},
+				"description": "Buys product Milk with role user"
+			},
+			"response": []
+		},
+		{
+			"name": "Adding a product: Validation",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "token",
+						"value": "ewogICJpZFVzZXIiOiAxLAogICJ1c2VybmFtZSI6ICJhZG1pbiIsCiAgInBhc3N3b3JkIjogInBhc3MiLAogICJyb2xlIjogMCwKICAicHVyY2hhc2VzIjogW10KfQ=="
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"product\":\"CocaCola\",\n\t\"price\":-1.5,\n\t\"stock\":-100\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/products/addProduct",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"products",
+						"addProduct"
+					]
+				},
+				"description": "Add a product with specified content in json"
+			},
+			"response": []
+		},
+		{
+			"name": "Update product: Validation",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "token",
+						"value": "ewogICJpZFVzZXIiOiAxLAogICJ1c2VybmFtZSI6ICJhZG1pbiIsCiAgInBhc3N3b3JkIjogInBhc3MiLAogICJyb2xlIjogMCwKICAicHVyY2hhc2VzIjogW10KfQ=="
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"idProduct\": 1,\n    \"product\": \"Chocolate\",\n    \"price\": 1.25,\n    \"stock\": -900,\n    \"purchases\": [],\n    \"likes\": [],\n    \"productlog\": []\n  }"
+				},
+				"url": {
+					"raw": "http://localhost:8080/products/updateProduct",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"products",
+						"updateProduct"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Base URL",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "http://localhost:8080/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						""
+					]
+				},
+				"description": "HAL driven API, shows available endpoints"
+			},
+			"response": []
+		},
+		{
+			"name": "Showing all products with page and sort for likes amount",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "http://localhost:8080/products?page=1&sort=1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"products"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "sort",
+							"value": "1"
+						}
+					]
+				},
+				"description": "Showing all products with sorting by likes amount."
+			},
+			"response": []
+		}
+	]
+}
