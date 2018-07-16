@@ -82,19 +82,19 @@ public class ProductRepositoryService {
 	// Method to show existing list of products sorted ascendantly by name
 	public ResponseEntity<String> findAllSorted(String page, String sort) {
 		ResponseEntity<String> response;
-		List<Product> products;
 		try {
 			int pageNumber = Integer.parseInt(page);
 			int sortType = Integer.parseInt(sort);
+			Gson gson = new GsonBuilder().setPrettyPrinting().create();
 			if(sortType==0) {
-				Gson gson = new GsonBuilder().setPrettyPrinting().create();
+				List<Product> products;
 				products = productRepository.findAllByOrderByProductAsc(PageRequest.of(pageNumber-1,3));
-				String json = gson.toJson(products);
-				response = new ResponseEntity<String>(json, HttpStatus.OK);
+				response = new ResponseEntity<String>(gson.toJson(products), HttpStatus.OK);
 			}
 			// Missing sort type = 1
 			else {
-				response = new ResponseEntity<String>("Sort 1", HttpStatus.OK);
+				List<Object> products = productRepository.findAllSortedByLikes();
+				response = new ResponseEntity<String>(gson.toJson(products), HttpStatus.OK);
 			}
 			
 		}catch(Exception e){
