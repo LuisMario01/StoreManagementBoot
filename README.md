@@ -40,12 +40,12 @@ Once project is deployed and database is running, test it with Postman and the c
 
 ### As a Springboot/Maven standalone project
 For more information, please refer to [SpringBoot official documentation](https://spring.io/guides/gs/spring-boot/).
-Reach the location in your system where you have downloaded the repository content. Go to storemanagement (it is the root of the project) and then type:
+Reach the location in your system where you have downloaded the repository content. Go to storemanagement (it is the root of the project), make sure you are in the same level as the pom.xml file, and then type:
 
 ```
 mvn spring-boot:run
 ```
-This command will start the application and you should see the initializing process coming in your screen. Remember, to use this, mvn must be available in your PATH.
+This command will start the application and you should see the initializing process coming in your screen. Remember, to use this, mvn must be available in your PATH. The last thing you should be seeing are the test queries for the basic structure of the database, performed by hibernate.
 
 ## Built With
 
