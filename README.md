@@ -54,7 +54,7 @@ This command will start the application and you should see the initializing proc
 * [Maven](https://maven.apache.org/) - Dependency Management.
 * [H2 database](http://www.h2database.com/html/main.html) - Database engine.
 * [Postman](https://www.getpostman.com/) - Used to test the API
-* [EclEmma](https://www.eclemma.org/) - Code coverga tool as an extension to Spring STS.
+* [EclEmma](https://www.eclemma.org/) - Code coverage tool as an extension to Spring STS.
 
 ## Authors
 
