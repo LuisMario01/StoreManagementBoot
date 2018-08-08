@@ -21,7 +21,7 @@ To import it from Spring STS, go to File > Open Projects From File System and br
 Tools required to develop or test the API:
 
 ```
-Java 10
+Java 8
 Pivotal tC Server Developer Edition v4.0./ [Apache Tomcat](http://www.baeldung.com/tomcat-deploy-war)
 Postman
 Snack store - REST API.PostmanCollection.json attached to test requests.
